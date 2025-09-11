@@ -8,7 +8,5 @@ import dev.andrewbailey.launcher.ui.home.Home
 
 @Composable
 fun Root() {
-    Home(
-        modifier = Modifier.background(Color.Gray)
-    )
+    Home()
 }
