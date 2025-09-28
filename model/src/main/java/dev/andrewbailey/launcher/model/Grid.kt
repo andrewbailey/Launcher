@@ -1,6 +1,6 @@
 package dev.andrewbailey.launcher.model
 
-import androidx.compose.ui.util.fastRoundToInt
+import kotlin.math.roundToInt
 
 data class GridPosition(
     val x: GridDimension,
@@ -46,7 +46,7 @@ value class GridDimension(
     companion object {
         @Suppress("NOTHING_TO_INLINE")
         inline operator fun invoke(fullSteps: Double) =
-            GridDimension((fullSteps * 2).fastRoundToInt())
+            GridDimension((fullSteps * 2).roundToInt())
     }
 }
 

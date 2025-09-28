@@ -21,4 +21,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "Launcher"
 include(":app")
- 
+include(":data:apps")
+include(":data:config")
+include(":data:icon")
+include(":inject")
+include(":model")

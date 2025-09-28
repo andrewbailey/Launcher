@@ -10,13 +10,17 @@ import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,31 +33,31 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.node.DelegatableNode
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import dev.andrewbailey.launcher.data.AppIconProvider
 import dev.andrewbailey.launcher.model.ApplicationListing
 import dev.andrewbailey.launcher.model.toIntent
+import dev.andrewbailey.launcher.provider.icon.AppIconProvider
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 @Composable
 fun LauncherIcon(
-    listing: ApplicationListing,
+    appName: String,
+    icon: @Composable () -> Unit,
+    label: @Composable () -> Unit,
+    onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = launchActivityAction(listing)
 ) {
-    val context = LocalContext.current
-    val iconPainter = remember(listing) {
-        ApplicationIconPainter(AppIconProvider(context).getAppIcon(listing))
-    }
-
     val clickInteractionSource = remember { MutableInteractionSource() }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
         modifier = modifier
+            .semantics { contentDescription = appName }
             .clickable(
                 enabled = onClick != null,
                 indication = null,
@@ -61,27 +65,65 @@ fun LauncherIcon(
                 interactionSource = clickInteractionSource
             )
     ) {
-        Image(
-            painter = iconPainter,
-            contentDescription = null,
-            contentScale = ContentScale.FillBounds,
+        Box(
             modifier = Modifier.size(48.dp)
                 .indication(clickInteractionSource, LauncherIconIndication)
-        )
+        ) {
+            icon()
+        }
         Spacer(Modifier.padding(4.dp))
-        Text(
-            text = listing.name,
-            textAlign = TextAlign.Center,
-            overflow = TextOverflow.Ellipsis,
-            modifier = modifier.weight(1f).fillMaxWidth()
-        )
+        Box(
+            contentAlignment = Alignment.TopCenter,
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+        ) {
+            label()
+        }
     }
 }
 
-@Composable
-private fun launchActivityAction(listing: ApplicationListing): () -> Unit {
-    val context = LocalContext.current
-    return { context.startActivity(listing.toIntent()) }
+object LauncherIconDefaults {
+    @Composable
+    fun icon(
+        listing: ApplicationListing,
+        iconProvider: AppIconProvider
+    ) = @Composable {
+        val icon = remember(iconProvider, listing) {
+            iconProvider.getAppIcon(listing)
+        }.collectAsState(null).value
+
+        if (icon != null) {
+            val painter = remember(icon) {
+                ApplicationIconPainter(icon)
+            }
+
+            Image(
+                painter = painter,
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+
+    @Composable
+    fun label(
+        appName: String
+    ) = @Composable {
+        Text(
+            text = appName,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+        )
+    }
+
+    @Composable
+    fun launchActivityAction(listing: ApplicationListing): () -> Unit {
+        val context = LocalContext.current
+        return { context.startActivity(listing.toIntent()) }
+    }
 }
 
 private object LauncherIconIndication : IndicationNodeFactory {
