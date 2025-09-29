@@ -39,7 +39,7 @@ fun Grid(
     gridSize: GridSize,
     modifier: Modifier = Modifier,
     cellAlignment: Alignment = Alignment.Center,
-    content: @Composable GridScope.() -> Unit
+    content: @Composable GridScope.() -> Unit,
 ) {
     Layout(content = { GridScopeInstance.content() }, modifier) { measurables, constraints ->
         val cellWidth = constraints.maxWidth / gridSize.width.halfSteps * 2
@@ -52,7 +52,7 @@ fun Grid(
                 size.width == 1.gd && size.height == 1.gd -> oneByOneCellConstraints
                 else -> Constraints(
                     maxWidth = cellWidth * size.width.halfSteps / 2,
-                    maxHeight = cellHeight * size.height.halfSteps / 2
+                    maxHeight = cellHeight * size.height.halfSteps / 2,
                 )
             }
             measurable.measure(constraints)
@@ -65,13 +65,13 @@ fun Grid(
                 val alignmentOffset = cellAlignment.align(
                     size = IntSize(
                         width = placeable.measuredWidth,
-                        height = placeable.measuredHeight
+                        height = placeable.measuredHeight,
                     ),
                     space = IntSize(
                         width = cellWidth * gridData.size.width.halfSteps / 2,
-                        height = cellHeight * gridData.size.height.halfSteps / 2
+                        height = cellHeight * gridData.size.height.halfSteps / 2,
                     ),
-                    layoutDirection = layoutDirection
+                    layoutDirection = layoutDirection,
                 )
 
                 placeable.place(
@@ -90,11 +90,11 @@ fun ScrollingVerticalGrid(
     modifier: Modifier = Modifier,
     scrollState: ScrollState = rememberScrollState(),
     cellAlignment: Alignment = Alignment.Center,
-    content: @Composable GridScope.() -> Unit
+    content: @Composable GridScope.() -> Unit,
 ) {
     Layout(
         content = { GridScopeInstance.content() },
-        modifier = modifier.verticalScroll(scrollState)
+        modifier = modifier.verticalScroll(scrollState),
     ) { measurables, constraints ->
         val cellWidth = constraints.maxWidth / gridWidth.halfSteps * 2
         val cellHeight = cellHeight.roundToPx()
@@ -110,7 +110,7 @@ fun ScrollingVerticalGrid(
                 size.width == 1.gd && size.height == 1.gd -> oneByOneCellConstraints
                 else -> Constraints(
                     maxWidth = cellWidth * size.width.halfSteps / 2,
-                    maxHeight = cellHeight * size.height.halfSteps / 2
+                    maxHeight = cellHeight * size.height.halfSteps / 2,
                 )
             }
             measurable.measure(constraints)
@@ -123,13 +123,13 @@ fun ScrollingVerticalGrid(
                 val alignmentOffset = cellAlignment.align(
                     size = IntSize(
                         width = placeable.measuredWidth,
-                        height = placeable.measuredHeight
+                        height = placeable.measuredHeight,
                     ),
                     space = IntSize(
                         width = cellWidth * gridData.size.width.halfSteps / 2,
-                        height = cellHeight * gridData.size.height.halfSteps / 2
+                        height = cellHeight * gridData.size.height.halfSteps / 2,
                     ),
-                    layoutDirection = layoutDirection
+                    layoutDirection = layoutDirection,
                 )
 
                 placeable.place(
@@ -146,7 +146,7 @@ fun ScrollingVerticalGrid(
 internal fun GridPreview() {
     Grid(
         gridSize = 5.gd by 9.gd,
-        modifier = Modifier.background(Color.White)
+        modifier = Modifier.background(Color.White),
     ) {
         for (x in 0 until 9) {
             for (y in 0 until 17) {
@@ -156,7 +156,7 @@ internal fun GridPreview() {
                         .gridPosition(position = (x / 2.0).gd x (y / 2.0).gd, size = 1.gd by 1.gd)
                         .size(if (isHalfGrid) 3.dp else 6.dp)
                         .clip(CircleShape)
-                        .background(if (isHalfGrid) Color.Blue else Color.Red)
+                        .background(if (isHalfGrid) Color.Blue else Color.Red),
                 )
             }
         }
@@ -167,7 +167,7 @@ internal fun GridPreview() {
                 .padding(16.dp)
                 .fillMaxSize()
                 .clip(CircleShape)
-                .background(Color.Black)
+                .background(Color.Black),
         )
 
         for (x in 0 until 5) {
@@ -179,7 +179,7 @@ internal fun GridPreview() {
                         .aspectRatio(1f)
                         .fillMaxSize()
                         .clip(CircleShape)
-                        .background(Color.Black)
+                        .background(Color.Black),
                 )
             }
         }
@@ -192,41 +192,34 @@ interface GridScope {
 }
 
 private object GridScopeInstance : GridScope {
-    override fun Modifier.gridPosition(position: GridPosition, size: GridSize): Modifier {
-        return this then GridPositionModifier(position, size)
-    }
+    override fun Modifier.gridPosition(position: GridPosition, size: GridSize): Modifier =
+        this then GridPositionModifier(position, size)
 }
 
-private data class GridPositionModifier(
-    val position: GridPosition,
-    val size: GridSize
-) : ModifierNodeElement<GridPositionModifierElement>() {
+private data class GridPositionModifier(val position: GridPosition, val size: GridSize) :
+    ModifierNodeElement<GridPositionModifierElement>() {
 
-    override fun create(): GridPositionModifierElement {
-        return GridPositionModifierElement(position, size)
-    }
+    override fun create(): GridPositionModifierElement = GridPositionModifierElement(position, size)
 
     override fun update(node: GridPositionModifierElement) {
         node.position = position
         node.size = size
     }
 
-    class GridPositionModifierElement(
-        var position: GridPosition,
-        var size: GridSize
-    ) : Modifier.Node(), ParentDataModifierNode {
-        override fun Density.modifyParentData(parentData: Any?): Any? {
-            return (parentData as? GridParentData ?: GridParentData()).apply {
+    class GridPositionModifierElement(var position: GridPosition, var size: GridSize) :
+        Modifier.Node(),
+        ParentDataModifierNode {
+        override fun Density.modifyParentData(parentData: Any?): Any? =
+            (parentData as? GridParentData ?: GridParentData()).apply {
                 position = this@GridPositionModifierElement.position
                 size = this@GridPositionModifierElement.size
             }
-        }
     }
 }
 
 private class GridParentData(
     var position: GridPosition = GridPosition(0.gd, 0.gd),
-    var size: GridSize = GridSize(1.gd, 1.gd)
+    var size: GridSize = GridSize(1.gd, 1.gd),
 ) {
     companion object {
         val Default = GridParentData()

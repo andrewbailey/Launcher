@@ -18,12 +18,12 @@ fun AppList(
     gridWidth: GridDimension,
     apps: List<ApplicationListing>,
     iconProvider: AppIconProvider,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     ScrollingVerticalGrid(
         gridWidth = gridWidth,
         cellHeight = 112.dp,
-        modifier = modifier
+        modifier = modifier,
     ) {
         apps.forEachIndexed { index, listing ->
             val y = index / (gridWidth.halfSteps / 2)
@@ -35,7 +35,7 @@ fun AppList(
                 onClick = LauncherIconDefaults.launchActivityAction(listing),
                 modifier = Modifier
                     .fillMaxSize()
-                    .gridPosition(position = GridPosition(x.gd, y.gd))
+                    .gridPosition(position = GridPosition(x.gd, y.gd)),
             )
         }
     }

@@ -6,4 +6,3 @@ import kotlinx.coroutines.flow.Flow
 interface AppListProvider {
     fun getAllLauncherActivities(): Flow<List<ApplicationListing>>
 }
-

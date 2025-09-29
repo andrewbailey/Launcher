@@ -8,13 +8,11 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.painter.Painter
 import dev.andrewbailey.launcher.model.ApplicationIcon
 
-class ApplicationIconPainter(
-    val icon: ApplicationIcon
-) : Painter() {
+class ApplicationIconPainter(val icon: ApplicationIcon) : Painter() {
     override val intrinsicSize: Size
         get() = Size(
             width = icon.drawable.intrinsicWidth.toFloat(),
-            height = icon.drawable.intrinsicHeight.toFloat()
+            height = icon.drawable.intrinsicHeight.toFloat(),
         )
 
     override fun DrawScope.onDraw() {
@@ -24,7 +22,7 @@ class ApplicationIconPainter(
                 (center.x - size.width / 2).toInt(),
                 (center.y - size.height / 2).toInt(),
                 (center.x + size.width / 2).toInt(),
-                (center.y + size.width / 2).toInt()
+                (center.y + size.width / 2).toInt(),
             )
             drawable.draw(it.nativeCanvas)
         }

@@ -29,8 +29,8 @@ import kotlinx.coroutines.processNextEventInCurrentThread
 class AppIconProviderImpl @Inject constructor(
     private val appListProvider: AppListProvider,
     private val packageManager: PackageManager,
-    @GlobalBackgroundScope scope: CoroutineScope
-): AppIconProvider {
+    @GlobalBackgroundScope scope: CoroutineScope,
+) : AppIconProvider {
 
     private val cache = appListProvider.getAllLauncherActivities()
         .mapLatestWithPrevious(emptyScatterMap<String, ApplicationIcon>()) { acc, next ->
@@ -43,19 +43,21 @@ class AppIconProviderImpl @Inject constructor(
         }
         .stateIn(scope, SharingStarted.Lazily, emptyScatterMap())
 
-    override fun getAppIcon(listing: ApplicationListing): Flow<ApplicationIcon?> {
-        return cache.map { it[listing.componentString] }
+    override fun getAppIcon(listing: ApplicationListing): Flow<ApplicationIcon?> = cache.map {
+        it[listing.componentString]
     }
 
-    private fun loadIcon(listing: ApplicationListing): ApplicationIcon {
-        return ApplicationIcon(packageManager.getActivityIcon(listing.toComponentName()))
-    }
+    private fun loadIcon(listing: ApplicationListing): ApplicationIcon =
+        ApplicationIcon(packageManager.getActivityIcon(listing.toComponentName()))
 
     private val ApplicationListing.componentString
         get() = "$packageName/$activityClass"
 }
 
-private fun <T, R> Flow<T>.mapLatestWithPrevious(initial: R, map: (prev: R, next: T) -> R): Flow<R> {
+private fun <T, R> Flow<T>.mapLatestWithPrevious(
+    initial: R,
+    map: (prev: R, next: T) -> R,
+): Flow<R> {
     var previous = initial
     return transform { next ->
         previous = map(previous, next)

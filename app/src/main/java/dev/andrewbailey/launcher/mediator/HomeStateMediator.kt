@@ -11,5 +11,5 @@ fun retainHomeStateMediator() = retainUiMediator { LauncherApplication.graph.hom
 
 class HomeStateMediator @Inject constructor(
     val iconProvider: AppIconProvider,
-    val appListProvider: AppListProvider
+    val appListProvider: AppListProvider,
 ) : UiMediator()

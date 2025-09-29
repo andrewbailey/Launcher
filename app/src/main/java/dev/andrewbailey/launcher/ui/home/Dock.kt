@@ -12,13 +12,13 @@ import dev.andrewbailey.launcher.ui.common.PopulatedHomeGrid
 fun Dock(
     gridSize: GridSize,
     contents: List<HomeConfiguration.PlacedPageElement>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val mediator = retainDockStateMediator()
     PopulatedHomeGrid(
         iconProvider = mediator.iconProvider,
         gridSize = gridSize,
         contents = contents,
-        modifier = modifier
+        modifier = modifier,
     )
 }

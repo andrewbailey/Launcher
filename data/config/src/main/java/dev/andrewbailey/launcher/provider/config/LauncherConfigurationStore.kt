@@ -1,5 +1,3 @@
 package dev.andrewbailey.launcher.provider.config
 
-class LauncherConfigurationStore {
-
-}
+class LauncherConfigurationStore

@@ -62,12 +62,12 @@ fun LauncherIcon(
                 enabled = onClick != null,
                 indication = null,
                 onClick = onClick ?: {},
-                interactionSource = clickInteractionSource
-            )
+                interactionSource = clickInteractionSource,
+            ),
     ) {
         Box(
             modifier = Modifier.size(48.dp)
-                .indication(clickInteractionSource, LauncherIconIndication)
+                .indication(clickInteractionSource, LauncherIconIndication),
         ) {
             icon()
         }
@@ -76,7 +76,7 @@ fun LauncherIcon(
             contentAlignment = Alignment.TopCenter,
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {
             label()
         }
@@ -87,7 +87,8 @@ object LauncherIconDefaults {
     @Composable
     fun icon(
         listing: ApplicationListing,
-        iconProvider: AppIconProvider
+        iconProvider: AppIconProvider,
+        modifier: Modifier = Modifier,
     ) = @Composable {
         val icon = remember(iconProvider, listing) {
             iconProvider.getAppIcon(listing)
@@ -102,20 +103,19 @@ object LauncherIconDefaults {
                 painter = painter,
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
-                modifier = Modifier.fillMaxSize()
+                modifier = modifier.fillMaxSize(),
             )
         }
     }
 
     @Composable
-    fun label(
-        appName: String
-    ) = @Composable {
+    fun label(appName: String, modifier: Modifier = Modifier) = @Composable {
         Text(
             text = appName,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             textAlign = TextAlign.Center,
+            modifier = modifier,
         )
     }
 
@@ -127,17 +127,16 @@ object LauncherIconDefaults {
 }
 
 private object LauncherIconIndication : IndicationNodeFactory {
-    override fun create(interactionSource: InteractionSource): DelegatableNode {
-        return OverlayIndicationNode(interactionSource)
-    }
+    override fun create(interactionSource: InteractionSource): DelegatableNode =
+        OverlayIndicationNode(interactionSource)
 
     override fun equals(other: Any?) = other === LauncherIconIndication
     override fun hashCode() = System.identityHashCode(this)
 }
 
-private class OverlayIndicationNode(
-    private val interactionSource: InteractionSource
-) : Modifier.Node(), DrawModifierNode {
+private class OverlayIndicationNode(private val interactionSource: InteractionSource) :
+    Modifier.Node(),
+    DrawModifierNode {
 
     private var currentAlpha = Animatable(0f)
     private var pressJob: Job? = null
@@ -148,7 +147,7 @@ private class OverlayIndicationNode(
         pressJob = coroutineScope.launch {
             currentAlpha.animateTo(
                 targetValue = targetAlpha,
-                animationSpec = tween(durationMillis = ANIMATION_DURATION_MS)
+                animationSpec = tween(durationMillis = ANIMATION_DURATION_MS),
             )
         }
     }
@@ -185,7 +184,7 @@ private class OverlayIndicationNode(
             drawRect(
                 color = Color.White,
                 alpha = alpha, // The overlay's own alpha
-                blendMode = BlendMode.SrcAtop
+                blendMode = BlendMode.SrcAtop,
             )
 
             // Restore the layer, merging it with the previous content

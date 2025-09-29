@@ -8,6 +8,4 @@ import dev.zacsweers.metro.Inject
 @Composable
 fun retainDockStateMediator() = retainUiMediator { LauncherApplication.graph.homeStateMediator }
 
-class DockStateMediator @Inject constructor(
-    val iconProvider: AppIconProvider
-) : UiMediator()
+class DockStateMediator @Inject constructor(val iconProvider: AppIconProvider) : UiMediator()

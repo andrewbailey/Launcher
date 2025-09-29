@@ -18,7 +18,6 @@ interface CoroutineProviders {
     @SingleIn(AppScope::class)
     @GlobalBackgroundScope
     @Provides
-    fun globalBackgroundCoroutineScope(@GlobalBackgroundScope job: Job): CoroutineScope {
-        return CoroutineScope(Dispatchers.Default + job)
-    }
+    fun globalBackgroundCoroutineScope(@GlobalBackgroundScope job: Job): CoroutineScope =
+        CoroutineScope(Dispatchers.Default + job)
 }

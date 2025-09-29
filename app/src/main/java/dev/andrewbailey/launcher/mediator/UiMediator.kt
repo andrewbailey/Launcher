@@ -9,9 +9,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 
 @Composable
-fun <T : UiMediator> retainUiMediator(factory: () -> T): T {
-    return retain { UiMediatorWrapper(factory) }.uiMediator
-}
+fun <T : UiMediator> retainUiMediator(factory: () -> T): T =
+    retain { UiMediatorWrapper(factory) }.uiMediator
 
 private class UiMediatorWrapper<T : UiMediator>(factory: () -> T) : RetainObserver {
     val uiMediator: T = factory()
@@ -25,7 +24,7 @@ private class UiMediatorWrapper<T : UiMediator>(factory: () -> T) : RetainObserv
     }
 }
 
-abstract class UiMediator() {
+abstract class UiMediator {
 
     protected val coroutineScope by lazy {
         CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -37,7 +36,5 @@ abstract class UiMediator() {
     }
 
     protected open fun onDestroy() {
-
     }
-
 }

@@ -13,15 +13,14 @@ import dev.zacsweers.metro.SingleIn
 interface LauncherGraph {
 
     @SingleIn(AppScope::class)
-    @Provides fun packageManager(context: Context): PackageManager = context.packageManager
+    @Provides
+    fun packageManager(context: Context): PackageManager = context.packageManager
 
     val homeStateMediator: HomeStateMediator
     val dockStateMediator: DockStateMediator
 
     @DependencyGraph.Factory
     fun interface Factory {
-        fun create(
-            @Provides applicationContext: Context
-        ): LauncherGraph
+        fun create(@Provides applicationContext: Context): LauncherGraph
     }
 }
