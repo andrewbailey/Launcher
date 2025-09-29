@@ -13,6 +13,11 @@ metro = "0.6.6"
 compileSdk = "36"
 minSdk = "29"
 targetSdk = "36"
+spotless = "8.0.0"
+ktlint = "1.7.1"
+prettier = "3.6.2"
+prettierXml = "3.4.2"
+ktlintCompose = "0.4.27"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -28,6 +33,7 @@ androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "u
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version.ref = "compose" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version.ref = "compose" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+ktlint-compose = { group = "io.nlopez.compose.rules", name="ktlint", version.ref="ktlintCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -35,3 +41,4 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
+spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
