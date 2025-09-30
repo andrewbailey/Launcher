@@ -84,17 +84,16 @@ fun Grid(
 }
 
 @Composable
-fun ScrollingVerticalGrid(
+fun UnboundedVerticalGrid(
     gridWidth: GridDimension,
     cellHeight: Dp,
     modifier: Modifier = Modifier,
-    scrollState: ScrollState = rememberScrollState(),
     cellAlignment: Alignment = Alignment.Center,
     content: @Composable GridScope.() -> Unit,
 ) {
     Layout(
         content = { GridScopeInstance.content() },
-        modifier = modifier.verticalScroll(scrollState),
+        modifier = modifier,
     ) { measurables, constraints ->
         val cellWidth = constraints.maxWidth / gridWidth.halfSteps * 2
         val cellHeight = cellHeight.roundToPx()

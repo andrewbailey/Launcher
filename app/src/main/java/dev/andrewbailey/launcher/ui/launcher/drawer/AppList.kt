@@ -1,6 +1,9 @@
-package dev.andrewbailey.launcher.ui.drawer
+package dev.andrewbailey.launcher.ui.launcher.drawer
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -11,7 +14,7 @@ import dev.andrewbailey.launcher.model.gd
 import dev.andrewbailey.launcher.provider.icon.AppIconProvider
 import dev.andrewbailey.launcher.ui.common.LauncherIcon
 import dev.andrewbailey.launcher.ui.common.LauncherIconDefaults
-import dev.andrewbailey.launcher.ui.common.ScrollingVerticalGrid
+import dev.andrewbailey.launcher.ui.common.UnboundedVerticalGrid
 
 @Composable
 fun AppList(
@@ -20,10 +23,10 @@ fun AppList(
     iconProvider: AppIconProvider,
     modifier: Modifier = Modifier,
 ) {
-    ScrollingVerticalGrid(
+    UnboundedVerticalGrid(
         gridWidth = gridWidth,
         cellHeight = 112.dp,
-        modifier = modifier,
+        modifier = modifier.verticalScroll(rememberScrollState()),
     ) {
         apps.forEachIndexed { index, listing ->
             val y = index / (gridWidth.halfSteps / 2)
