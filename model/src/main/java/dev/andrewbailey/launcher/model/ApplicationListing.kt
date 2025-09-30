@@ -9,4 +9,8 @@ data class ApplicationListing(val name: String, val packageName: String, val act
 
 fun ApplicationListing.toComponentName() = ComponentName(packageName, activityClass)
 
-fun ApplicationListing.toIntent() = Intent().apply { component = toComponentName() }
+fun ApplicationListing.toIntent() = Intent().apply {
+    component = toComponentName()
+    action = Intent.ACTION_MAIN
+    addCategory(Intent.CATEGORY_LAUNCHER)
+}
