@@ -9,6 +9,9 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.gestures.TargetedFlingBehavior
 import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitVerticalPointerSlopOrCancellation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.overscroll
@@ -19,21 +22,30 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource.Companion.UserInput
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Velocity
 import dev.andrewbailey.launcher.ui.launcher.drawer.Drawer
 import dev.andrewbailey.launcher.ui.launcher.home.Home
+import dev.andrewbailey.launcher.util.expandNotificationShade
+import dev.andrewbailey.launcher.util.expandSettingsShade
+import kotlinx.coroutines.CancellationException
 
 @Composable
 fun Launcher(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     val dragState = rememberSaveable(saver = AnchoredDraggableState.Saver()) {
         AnchoredDraggableState(
-            initialValue = DrawerState.Expanded,
+            initialValue = DrawerState.Collapsed,
         )
     }
     val flingBehavior = AnchoredDraggableDefaults.flingBehavior(
@@ -56,12 +68,25 @@ fun Launcher(modifier: Modifier = Modifier) {
                 flingBehavior = flingBehavior,
                 overscrollEffect = overscrollEffect,
             )
+            .onVerticalDownSwipe(
+                enabled = { dragState.currentValue == DrawerState.Collapsed },
+                action = { fingers ->
+                    if (fingers == 1) {
+                        context.expandNotificationShade()
+                    } else {
+                        context.expandSettingsShade()
+                    }
+                },
+            )
+            .verticalSwipeHapticFeedback(LocalHapticFeedback.current) {
+                dragState.currentValue == DrawerState.Collapsed
+            }
             .overscroll(overscrollEffect)
             .onSizeChanged {
                 dragState.updateAnchors(
                     DraggableAnchors {
-                        DrawerState.Expanded at it.height.toFloat()
-                        DrawerState.Collapsed at 0f
+                        DrawerState.Collapsed at it.height.toFloat()
+                        DrawerState.Expanded at 0f
                     },
                 )
             },
@@ -70,12 +95,12 @@ fun Launcher(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .offset {
                     val inverseOffset = dragState.offset -
-                        dragState.anchors.positionOf(DrawerState.Expanded)
+                        dragState.anchors.positionOf(DrawerState.Collapsed)
 
                     IntOffset(x = 0, y = inverseOffset.toInt() / 4)
                 }
                 .graphicsLayer {
-                    val visibility = dragState.progress(DrawerState.Collapsed, DrawerState.Expanded)
+                    val visibility = dragState.progress(DrawerState.Expanded, DrawerState.Collapsed)
                     alpha = visibility * 2.25f - 1
                 },
         )
@@ -84,10 +109,48 @@ fun Launcher(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .offset { IntOffset(x = 0, y = dragState.offset.toInt()) }
                 .graphicsLayer {
-                    val visibility = dragState.progress(DrawerState.Expanded, DrawerState.Collapsed)
+                    val visibility = dragState.progress(DrawerState.Collapsed, DrawerState.Expanded)
                     alpha = visibility * 2.25f - 1
                 },
         )
+    }
+}
+
+private fun Modifier.verticalSwipeHapticFeedback(
+    hapticFeedback: HapticFeedback,
+    hapticFeedbackType: HapticFeedbackType = HapticFeedbackType.GestureThresholdActivate,
+    enabled: () -> Boolean,
+): Modifier = this.pointerInput(enabled) {
+    awaitEachGesture {
+        val down = awaitFirstDown(requireUnconsumed = false)
+        awaitVerticalPointerSlopOrCancellation(down.id, down.type) { change, _ ->
+            if (enabled()) {
+                hapticFeedback.performHapticFeedback(hapticFeedbackType)
+                throw CancellationException()
+            }
+        }
+    }
+}
+
+private fun Modifier.onVerticalDownSwipe(
+    enabled: () -> Boolean,
+    action: (fingerCount: Int) -> Unit,
+): Modifier = this.pointerInput(enabled, action) {
+    awaitEachGesture {
+        val down = awaitFirstDown(requireUnconsumed = false)
+        val drag = awaitVerticalPointerSlopOrCancellation(down.id, down.type) { change, over ->
+            if (enabled() && over > 0) change.consume()
+        }
+
+        if (drag != null) {
+            val fingerCount = currentEvent.changes.distinctBy { it.id }.count { it.pressed }
+            action(fingerCount)
+
+            do {
+                val event = awaitPointerEvent()
+                event.changes.forEach { it.consume() }
+            } while (event.changes.any { it.pressed })
+        }
     }
 }
 
@@ -139,11 +202,11 @@ private fun rememberAnchoredDraggableScrollConnection(
 
 private val AnchoredDraggableState<DrawerState>.isBetweenStates: Boolean
     get() {
-        val progress = progress(DrawerState.Expanded, DrawerState.Collapsed)
+        val progress = progress(DrawerState.Collapsed, DrawerState.Expanded)
         return progress != 0f && progress != 1f
     }
 
 private enum class DrawerState {
-    Expanded,
     Collapsed,
+    Expanded,
 }
