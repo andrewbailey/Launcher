@@ -1,8 +1,8 @@
 package dev.andrewbailey.launcher.mediator
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.RetainObserver
-import androidx.compose.runtime.retain
+import androidx.compose.runtime.retain.RetainObserver
+import androidx.compose.runtime.retain.retain
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -18,6 +18,7 @@ private class UiMediatorWrapper<T : UiMediator>(factory: () -> T) : RetainObserv
     override fun onRetained() {}
     override fun onEnteredComposition() {}
     override fun onExitedComposition() {}
+    override fun onUnused() {}
 
     override fun onRetired() {
         uiMediator.destroy()

@@ -11,7 +11,7 @@ import androidx.compose.foundation.gestures.TargetedFlingBehavior
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.awaitVerticalPointerSlopOrCancellation
+import androidx.compose.foundation.gestures.awaitVerticalTouchSlopOrCancellation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.overscroll
@@ -123,7 +123,7 @@ private fun Modifier.verticalSwipeHapticFeedback(
 ): Modifier = this.pointerInput(enabled) {
     awaitEachGesture {
         val down = awaitFirstDown(requireUnconsumed = false)
-        awaitVerticalPointerSlopOrCancellation(down.id, down.type) { change, _ ->
+        awaitVerticalTouchSlopOrCancellation(down.id) { change, _ ->
             if (enabled()) {
                 hapticFeedback.performHapticFeedback(hapticFeedbackType)
                 throw CancellationException()
@@ -138,7 +138,7 @@ private fun Modifier.onVerticalDownSwipe(
 ): Modifier = this.pointerInput(enabled, action) {
     awaitEachGesture {
         val down = awaitFirstDown(requireUnconsumed = false)
-        val drag = awaitVerticalPointerSlopOrCancellation(down.id, down.type) { change, over ->
+        val drag = awaitVerticalTouchSlopOrCancellation(down.id) { change, over ->
             if (enabled() && over > 0) change.consume()
         }
 

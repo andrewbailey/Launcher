@@ -50,6 +50,7 @@ fun Grid(
             val size = (measurable.parentData as? GridParentData ?: GridParentData.Default).size
             val constraints = when {
                 size.width == 1.gd && size.height == 1.gd -> oneByOneCellConstraints
+
                 else -> Constraints(
                     maxWidth = cellWidth * size.width.halfSteps / 2,
                     maxHeight = cellHeight * size.height.halfSteps / 2,
@@ -107,6 +108,7 @@ fun UnboundedVerticalGrid(
             val size = gridData.size
             val constraints = when {
                 size.width == 1.gd && size.height == 1.gd -> oneByOneCellConstraints
+
                 else -> Constraints(
                     maxWidth = cellWidth * size.width.halfSteps / 2,
                     maxHeight = cellHeight * size.height.halfSteps / 2,

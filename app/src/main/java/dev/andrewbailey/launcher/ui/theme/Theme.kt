@@ -47,6 +47,7 @@ fun LauncherTheme(
         }
 
         darkTheme -> DarkColorScheme
+
         else -> LightColorScheme
     }
 
