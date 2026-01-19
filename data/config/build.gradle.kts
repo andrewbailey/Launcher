@@ -39,7 +39,9 @@ kotlin {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    api(project(":inject"))
     api(project(":model"))
+    api(project(":data:apps"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

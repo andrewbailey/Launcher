@@ -1,15 +1,19 @@
 package dev.andrewbailey.launcher.mediator
 
-import androidx.compose.runtime.Composable
-import dev.andrewbailey.launcher.LauncherApplication
-import dev.andrewbailey.launcher.provider.apps.AppListProvider
+import dev.andrewbailey.launcher.provider.config.LauncherConfigurationProvider
 import dev.andrewbailey.launcher.provider.icon.AppIconProvider
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ClassKey
+import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 
-@Composable
-fun retainHomeStateMediator() = retainUiMediator { LauncherApplication.graph.homeStateMediator }
-
+@ContributesIntoMap(AppScope::class, binding<UiMediator>())
+@ClassKey(HomeStateMediator::class)
 class HomeStateMediator @Inject constructor(
     val iconProvider: AppIconProvider,
-    val appListProvider: AppListProvider,
-) : UiMediator()
+    launcherConfigurationProvider: LauncherConfigurationProvider,
+) : UiMediator() {
+
+    val homescreenLayout = launcherConfigurationProvider.getHomeConfiguration().collectAsState(null)
+}

@@ -6,15 +6,13 @@ import dev.zacsweers.metro.createGraphFactory
 
 class LauncherApplication : Application() {
 
+    lateinit var graph: LauncherGraph
+        private set
+
     override fun onCreate() {
         super.onCreate()
         graph = createGraphFactory<LauncherGraph.Factory>().create(
             applicationContext = this,
         )
-    }
-
-    companion object {
-        lateinit var graph: LauncherGraph
-            private set
     }
 }

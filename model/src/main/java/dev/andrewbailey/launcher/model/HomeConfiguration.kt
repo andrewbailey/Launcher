@@ -1,9 +1,9 @@
 package dev.andrewbailey.launcher.model
 
 data class HomeConfiguration(
-    val pageGridSize: GridDimension,
+    val pageGridSize: GridSize,
     val pages: List<List<PlacedPageElement>>,
-    val dockGridSize: GridDimension,
+    val dockGridSize: GridSize,
     val dock: List<PlacedPageElement>,
 ) {
 
