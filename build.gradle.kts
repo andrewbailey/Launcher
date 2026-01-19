@@ -25,11 +25,6 @@ spotless {
     kotlin {
         target("**/*.kt", "**/*.gradle.kts")
         ktlint(libs.versions.ktlint.get())
-            .customRuleSets(
-                listOf(
-                    libs.ktlint.compose.get().toString(),
-                ),
-            )
     }
     format("xml") {
         target("**/*.xml")
