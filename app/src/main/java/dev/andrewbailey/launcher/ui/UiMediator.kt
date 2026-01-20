@@ -1,4 +1,4 @@
-package dev.andrewbailey.launcher.mediator
+package dev.andrewbailey.launcher.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State

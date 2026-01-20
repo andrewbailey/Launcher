@@ -7,6 +7,7 @@ import dev.andrewbailey.launcher.model.GridSize
 import dev.andrewbailey.launcher.model.HomeConfiguration.PlacedPageElement
 import dev.andrewbailey.launcher.model.HomeConfiguration.PlacedPageElement.PlacedIcon
 import dev.andrewbailey.launcher.provider.icon.AppIconProvider
+import dev.andrewbailey.launcher.ui.layout.Grid
 
 @Composable
 fun PopulatedHomeGrid(

@@ -1,4 +1,4 @@
-package dev.andrewbailey.launcher.ui.launcher.home
+package dev.andrewbailey.launcher.ui.homescreen.home
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable

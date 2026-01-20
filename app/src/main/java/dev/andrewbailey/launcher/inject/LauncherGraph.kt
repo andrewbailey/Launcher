@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.compose.runtime.staticCompositionLocalOf
 import dev.andrewbailey.launcher.LauncherApplication
-import dev.andrewbailey.launcher.mediator.UiMediator
+import dev.andrewbailey.launcher.ui.UiMediator
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Multibinds

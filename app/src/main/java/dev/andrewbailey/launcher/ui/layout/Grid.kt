@@ -1,4 +1,4 @@
-package dev.andrewbailey.launcher.ui.common
+package dev.andrewbailey.launcher.ui.layout
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -29,7 +29,7 @@ import dev.andrewbailey.launcher.model.GridSize
 import dev.andrewbailey.launcher.model.by
 import dev.andrewbailey.launcher.model.gd
 import dev.andrewbailey.launcher.model.x
-import dev.andrewbailey.launcher.ui.common.GridPositionModifier.GridPositionModifierElement
+import dev.andrewbailey.launcher.ui.layout.GridPositionModifier.GridPositionModifierElement
 
 @Composable
 fun Grid(

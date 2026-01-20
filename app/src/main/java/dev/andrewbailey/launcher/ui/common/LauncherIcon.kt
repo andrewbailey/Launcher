@@ -1,5 +1,6 @@
 package dev.andrewbailey.launcher.ui.common
 
+import android.graphics.Rect
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -24,12 +25,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.node.DelegatableNode
 import androidx.compose.ui.node.DrawModifierNode
@@ -41,6 +47,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import dev.andrewbailey.launcher.model.ApplicationIcon
 import dev.andrewbailey.launcher.model.ApplicationListing
 import dev.andrewbailey.launcher.model.toIntent
 import dev.andrewbailey.launcher.provider.icon.AppIconProvider
@@ -136,6 +143,27 @@ object LauncherIconDefaults {
     fun launchActivityAction(listing: ApplicationListing): () -> Unit {
         val context = LocalContext.current
         return { context.startActivity(listing.toIntent()) }
+    }
+}
+
+class ApplicationIconPainter(val icon: ApplicationIcon) : Painter() {
+    override val intrinsicSize: Size
+        get() = Size(
+            width = icon.drawable.intrinsicWidth.toFloat(),
+            height = icon.drawable.intrinsicHeight.toFloat(),
+        )
+
+    override fun DrawScope.onDraw() {
+        drawIntoCanvas {
+            val drawable = icon.drawable
+            drawable.bounds = Rect(
+                (center.x - size.width / 2).toInt(),
+                (center.y - size.height / 2).toInt(),
+                (center.x + size.width / 2).toInt(),
+                (center.y + size.width / 2).toInt(),
+            )
+            drawable.draw(it.nativeCanvas)
+        }
     }
 }
 

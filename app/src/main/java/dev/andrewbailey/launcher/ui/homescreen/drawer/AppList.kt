@@ -1,4 +1,4 @@
-package dev.andrewbailey.launcher.ui.launcher.drawer
+package dev.andrewbailey.launcher.ui.homescreen.drawer
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
@@ -13,7 +13,7 @@ import dev.andrewbailey.launcher.model.gd
 import dev.andrewbailey.launcher.provider.icon.AppIconProvider
 import dev.andrewbailey.launcher.ui.common.LauncherIcon
 import dev.andrewbailey.launcher.ui.common.LauncherIconDefaults
-import dev.andrewbailey.launcher.ui.common.UnboundedVerticalGrid
+import dev.andrewbailey.launcher.ui.layout.UnboundedVerticalGrid
 
 @Composable
 fun AppList(

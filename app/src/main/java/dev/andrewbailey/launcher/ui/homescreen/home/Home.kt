@@ -1,4 +1,4 @@
-package dev.andrewbailey.launcher.ui.launcher.home
+package dev.andrewbailey.launcher.ui.homescreen.home
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -8,9 +8,8 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import dev.andrewbailey.launcher.mediator.HomeStateMediator
-import dev.andrewbailey.launcher.mediator.retainUiMediator
 import dev.andrewbailey.launcher.ui.common.PopulatedHomeGrid
+import dev.andrewbailey.launcher.ui.retainUiMediator
 
 @Composable
 fun Home(modifier: Modifier = Modifier) {
