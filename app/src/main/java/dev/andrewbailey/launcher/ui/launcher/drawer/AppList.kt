@@ -1,6 +1,5 @@
 package dev.andrewbailey.launcher.ui.launcher.drawer
 
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll

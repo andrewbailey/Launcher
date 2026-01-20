@@ -6,7 +6,6 @@ import androidx.compose.ui.platform.LocalContext
 import dev.andrewbailey.launcher.inject.LocalDependencyGraph
 import dev.andrewbailey.launcher.inject.dependencyGraph
 import dev.andrewbailey.launcher.ui.launcher.Launcher
-import dev.andrewbailey.launcher.ui.launcher.home.Home
 import dev.andrewbailey.launcher.ui.theme.LauncherTheme
 
 @Composable

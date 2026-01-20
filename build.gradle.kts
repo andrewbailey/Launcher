@@ -25,6 +25,7 @@ spotless {
     kotlin {
         target("**/*.kt", "**/*.gradle.kts")
         ktlint(libs.versions.ktlint.get())
+            .setEditorConfigPath(rootProject.file(".editorconfig"))
     }
     format("xml") {
         target("**/*.xml")

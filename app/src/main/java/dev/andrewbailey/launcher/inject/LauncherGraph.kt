@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import androidx.compose.runtime.staticCompositionLocalOf
 import dev.andrewbailey.launcher.LauncherApplication
-import dev.andrewbailey.launcher.mediator.DrawerStateMediator
-import dev.andrewbailey.launcher.mediator.HomeStateMediator
 import dev.andrewbailey.launcher.mediator.UiMediator
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
