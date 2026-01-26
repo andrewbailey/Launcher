@@ -7,6 +7,7 @@ import dev.zacsweers.metro.Binds
 import dev.zacsweers.metro.ContributesTo
 
 @ContributesTo(AppScope::class)
-interface Providers {
-    @Binds val AppIconProviderImpl.binds: AppIconProvider
+public interface Providers {
+    @Binds
+    public val AppIconProviderImpl.binds: AppIconProvider
 }

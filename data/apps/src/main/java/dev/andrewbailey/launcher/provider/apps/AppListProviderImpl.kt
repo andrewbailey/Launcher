@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class AppListProviderImpl @Inject constructor(
+public class AppListProviderImpl @Inject constructor(
     context: Context,
     private val packageManager: PackageManager,
     @GlobalBackgroundScope scope: CoroutineScope,
@@ -27,9 +27,10 @@ class AppListProviderImpl @Inject constructor(
 
     private val allActivities = packagesChangedPing(context)
         .map { packageManager.queryMainActivities().map { ApplicationListing(packageManager, it) } }
-        .stateIn(scope, SharingStarted.Companion.Lazily, null)
+        .stateIn(scope, SharingStarted.Lazily, null)
 
-    override fun getAllLauncherActivities() = allActivities.filterNotNull()
+    override fun getAllLauncherActivities(): Flow<List<ApplicationListing>> =
+        allActivities.filterNotNull()
 
     private fun PackageManager.queryMainActivities() = queryIntentActivities(
         Intent().apply {

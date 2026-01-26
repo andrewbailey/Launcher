@@ -61,6 +61,9 @@ dependencies {
     implementation(project(":inject"))
     implementation(project(":model"))
 
+    implementation(project(":ui:common"))
+    implementation(project(":ui:homescreen"))
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

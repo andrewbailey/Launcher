@@ -9,15 +9,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 
 @ContributesTo(AppScope::class)
-interface CoroutineProviders {
+public interface CoroutineProviders {
     @SingleIn(AppScope::class)
     @GlobalBackgroundScope
     @Provides
-    fun globalBackgroundJob(): Job = Job()
+    public fun globalBackgroundJob(): Job = Job()
 
     @SingleIn(AppScope::class)
     @GlobalBackgroundScope
     @Provides
-    fun globalBackgroundCoroutineScope(@GlobalBackgroundScope job: Job): CoroutineScope =
+    public fun globalBackgroundCoroutineScope(@GlobalBackgroundScope job: Job): CoroutineScope =
         CoroutineScope(Dispatchers.Default + job)
 }

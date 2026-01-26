@@ -3,11 +3,16 @@ package dev.andrewbailey.launcher.model
 import android.content.ComponentName
 import android.content.Intent
 
-data class ApplicationListing(val name: String, val packageName: String, val activityClass: String)
+public data class ApplicationListing(
+    val name: String,
+    val packageName: String,
+    val activityClass: String,
+)
 
-fun ApplicationListing.toComponentName() = ComponentName(packageName, activityClass)
+public fun ApplicationListing.toComponentName(): ComponentName =
+    ComponentName(packageName, activityClass)
 
-fun ApplicationListing.toIntent() = Intent().apply {
+public fun ApplicationListing.toIntent(): Intent = Intent().apply {
     component = toComponentName()
     action = Intent.ACTION_MAIN
     addCategory(Intent.CATEGORY_LAUNCHER)

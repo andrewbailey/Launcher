@@ -12,4 +12,4 @@ import dev.zacsweers.metro.Qualifier
     AnnotationTarget.TYPE,
 )
 @Qualifier
-annotation class GlobalBackgroundScope
+public annotation class GlobalBackgroundScope

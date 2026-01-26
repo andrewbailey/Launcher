@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
 
-class AppIconProviderImpl @Inject constructor(
+public class AppIconProviderImpl @Inject constructor(
     private val appListProvider: AppListProvider,
     private val packageManager: PackageManager,
     @GlobalBackgroundScope scope: CoroutineScope,

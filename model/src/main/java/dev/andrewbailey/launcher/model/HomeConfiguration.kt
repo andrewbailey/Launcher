@@ -1,19 +1,21 @@
 package dev.andrewbailey.launcher.model
 
-data class HomeConfiguration(
+public data class HomeConfiguration(
     val pageGridSize: GridSize,
     val pages: List<List<PlacedPageElement>>,
     val dockGridSize: GridSize,
     val dock: List<PlacedPageElement>,
 ) {
 
-    sealed class PlacedPageElement {
-        abstract val position: GridPosition
-        abstract val size: GridSize
+    public sealed class PlacedPageElement {
+        public abstract val position: GridPosition
+        public abstract val size: GridSize
 
-        data class PlacedIcon(val app: ApplicationListing, override val position: GridPosition) :
-            PlacedPageElement() {
-            override val size = GridSize(1.gd, 1.gd)
+        public data class PlacedIcon(
+            val app: ApplicationListing,
+            override val position: GridPosition,
+        ) : PlacedPageElement() {
+            override val size: GridSize = GridSize(1.gd, 1.gd)
         }
     }
 }

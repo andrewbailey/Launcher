@@ -7,6 +7,6 @@ import dev.zacsweers.metro.Binds
 import dev.zacsweers.metro.ContributesTo
 
 @ContributesTo(AppScope::class)
-interface Providers {
-    @Binds val LauncherConfigurationProviderImpl.binds: LauncherConfigurationProvider
+public interface Providers {
+    @Binds public val LauncherConfigurationProviderImpl.binds: LauncherConfigurationProvider
 }

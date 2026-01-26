@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class LauncherConfigurationProviderImpl @Inject constructor(
+public class LauncherConfigurationProviderImpl @Inject constructor(
     private val appListProvider: AppListProvider,
     @GlobalBackgroundScope scope: CoroutineScope,
 ) : LauncherConfigurationProvider {
