@@ -39,6 +39,7 @@ import kotlinx.coroutines.CancellationException
 internal fun FlingLayout(
     draggableState: AnchoredDraggableState<FlingLayoutExpansionState>,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     onVerticalDownOverswipe: (fingers: Int) -> Unit = {},
     overscrollEffect: OverscrollEffect? = rememberOverscrollEffect(),
     flingBehavior: TargetedFlingBehavior = AnchoredDraggableDefaults.flingBehavior(
@@ -54,6 +55,7 @@ internal fun FlingLayout(
         modifier = modifier
             .nestedScroll(rememberAnchoredDraggableScrollConnection(draggableState, flingBehavior))
             .anchoredDraggable(
+                enabled = enabled,
                 state = draggableState,
                 reverseDirection = false,
                 orientation = Orientation.Vertical,
@@ -61,12 +63,13 @@ internal fun FlingLayout(
                 overscrollEffect = overscrollEffect,
             )
             .onVerticalDownSwipe(
-                enabled = { draggableState.currentValue == Collapsed },
+                enabled = { enabled && draggableState.currentValue == Collapsed },
                 action = onVerticalDownOverswipe,
             )
-            .verticalSwipeHapticFeedback(LocalHapticFeedback.current) {
-                draggableState.currentValue == Collapsed
-            }
+            .verticalSwipeHapticFeedback(
+                hapticFeedback = LocalHapticFeedback.current,
+                enabled = { enabled && draggableState.currentValue == Collapsed },
+            )
             .overscroll(overscrollEffect)
             .onSizeChanged {
                 draggableState.updateAnchors(

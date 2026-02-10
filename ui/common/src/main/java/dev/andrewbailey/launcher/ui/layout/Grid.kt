@@ -30,6 +30,7 @@ import dev.andrewbailey.launcher.model.by
 import dev.andrewbailey.launcher.model.gd
 import dev.andrewbailey.launcher.model.x
 import dev.andrewbailey.launcher.ui.layout.GridPositionModifier.GridPositionModifierElement
+import kotlin.math.roundToInt
 
 @Composable
 public fun Grid(
@@ -39,18 +40,22 @@ public fun Grid(
     content: @Composable GridScope.() -> Unit,
 ) {
     Layout(content = { GridScopeInstance.content() }, modifier) { measurables, constraints ->
-        val cellWidth = constraints.maxWidth / gridSize.width.halfSteps * 2
-        val cellHeight = constraints.maxHeight / gridSize.height.halfSteps * 2
+        val halfStepWidth = constraints.maxWidth.toFloat() / gridSize.width.halfSteps
+        val halfStepHeight = constraints.maxHeight.toFloat() / gridSize.height.halfSteps
 
-        val oneByOneCellConstraints = Constraints(maxWidth = cellWidth, maxHeight = cellHeight)
+        val oneByOneCellConstraints = Constraints(
+            maxWidth = (halfStepWidth * 2).roundToInt(),
+            maxHeight = (halfStepHeight * 2).roundToInt(),
+        )
+
         val placeables = measurables.map { measurable ->
             val size = (measurable.parentData as? GridParentData ?: GridParentData.Default).size
             val constraints = when {
                 size.width == 1.gd && size.height == 1.gd -> oneByOneCellConstraints
 
                 else -> Constraints(
-                    maxWidth = cellWidth * size.width.halfSteps / 2,
-                    maxHeight = cellHeight * size.height.halfSteps / 2,
+                    maxWidth = (halfStepWidth * size.width.halfSteps).roundToInt(),
+                    maxHeight = (halfStepHeight * size.height.halfSteps).roundToInt(),
                 )
             }
             measurable.measure(constraints)
@@ -66,15 +71,17 @@ public fun Grid(
                         height = placeable.measuredHeight,
                     ),
                     space = IntSize(
-                        width = cellWidth * gridData.size.width.halfSteps / 2,
-                        height = cellHeight * gridData.size.height.halfSteps / 2,
+                        width = (halfStepWidth * gridData.size.width.halfSteps).roundToInt(),
+                        height = (halfStepHeight * gridData.size.height.halfSteps).roundToInt(),
                     ),
                     layoutDirection = layoutDirection,
                 )
 
                 placeable.place(
-                    x = alignmentOffset.x + (gridData.position.x.halfSteps * cellWidth / 2),
-                    y = alignmentOffset.y + (gridData.position.y.halfSteps * cellHeight / 2),
+                    x = alignmentOffset.x +
+                        (gridData.position.x.halfSteps * halfStepWidth).roundToInt(),
+                    y = alignmentOffset.y +
+                        (gridData.position.y.halfSteps * halfStepHeight).roundToInt(),
                 )
             }
         }

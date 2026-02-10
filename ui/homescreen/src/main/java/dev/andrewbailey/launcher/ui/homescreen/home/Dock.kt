@@ -7,9 +7,12 @@ import androidx.compose.ui.unit.dp
 import dev.andrewbailey.launcher.model.GridSize
 import dev.andrewbailey.launcher.model.HomeConfiguration.PlacedPageElement
 import dev.andrewbailey.launcher.provider.icon.AppIconProvider
+import dev.andrewbailey.launcher.ui.dragdrop.DragDropScope
+import dev.andrewbailey.launcher.ui.homescreen.DraggableHomescreenItem
 import dev.andrewbailey.launcher.ui.homescreen.layout.PopulatedHomeGrid
 
 @Composable
+context(dragDropScope: DragDropScope<DraggableHomescreenItem>)
 internal fun Dock(
     iconProvider: AppIconProvider,
     gridSize: GridSize,

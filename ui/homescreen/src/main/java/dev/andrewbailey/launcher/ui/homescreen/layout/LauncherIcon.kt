@@ -5,11 +5,12 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.IndicationNodeFactory
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.interaction.PressInteraction.Cancel
+import androidx.compose.foundation.interaction.PressInteraction.Press
+import androidx.compose.foundation.interaction.PressInteraction.Release
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -26,10 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.toRect
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -37,11 +36,18 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
 import androidx.compose.ui.node.DelegatableNode
 import androidx.compose.ui.node.DrawModifierNode
+import androidx.compose.ui.node.ObserverModifierNode
+import androidx.compose.ui.node.currentValueOf
+import androidx.compose.ui.node.observeReads
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalViewConfiguration
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
@@ -59,25 +65,27 @@ internal fun LauncherIcon(
     appName: String,
     icon: @Composable () -> Unit,
     label: @Composable () -> Unit,
-    onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    interactionSource: MutableInteractionSource? = null,
 ) {
-    val clickInteractionSource = remember { MutableInteractionSource() }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
         modifier = modifier
-            .semantics { contentDescription = appName }
-            .clickable(
-                enabled = onClick != null,
-                indication = null,
-                onClick = onClick ?: {},
-                interactionSource = clickInteractionSource,
-            ),
+            .semantics(mergeDescendants = true) {
+                role = Role.Button
+                contentDescription = appName
+            },
     ) {
         Box(
             modifier = Modifier.size(48.dp)
-                .indication(clickInteractionSource, LauncherIconIndication),
+                .then(
+                    if (interactionSource == null) {
+                        Modifier
+                    } else {
+                        Modifier.indication(interactionSource, LauncherIconIndication)
+                    },
+                ),
         ) {
             icon()
         }
@@ -85,7 +93,6 @@ internal fun LauncherIcon(
         Box(
             contentAlignment = Alignment.TopCenter,
             modifier = Modifier
-                .weight(1f)
                 .fillMaxWidth(),
         ) {
             label()
@@ -169,27 +176,41 @@ internal class ApplicationIconPainter(val icon: ApplicationIcon) : Painter() {
 
 private object LauncherIconIndication : IndicationNodeFactory {
     override fun create(interactionSource: InteractionSource): DelegatableNode =
-        OverlayIndicationNode(interactionSource)
+        ScalingIndicationNode(interactionSource)
 
     override fun equals(other: Any?) = other === LauncherIconIndication
     override fun hashCode() = System.identityHashCode(this)
 }
 
-private class OverlayIndicationNode(private val interactionSource: InteractionSource) :
+private class ScalingIndicationNode(private val interactionSource: InteractionSource) :
     Modifier.Node(),
-    DrawModifierNode {
+    DrawModifierNode,
+    CompositionLocalConsumerModifierNode,
+    ObserverModifierNode {
 
-    private var currentAlpha = Animatable(0f)
-    private var pressJob: Job? = null
-    private val layerPaint = Paint() // Reusable Paint for saveLayer
+    private var scale = Animatable(SCALE_INACTIVE)
+    private var isTouchActive = false
 
-    private fun animateTo(targetAlpha: Float) {
-        pressJob?.cancel()
-        pressJob = coroutineScope.launch {
-            currentAlpha.animateTo(
-                targetValue = targetAlpha,
-                animationSpec = tween(durationMillis = ANIMATION_DURATION_MS),
-            )
+    private var longPressDurationMs = 0
+
+    private var animationJob: Job? = null
+        set(value) {
+            field?.cancel()
+            field = value
+        }
+
+    private fun animateTo(isTouched: Boolean) {
+        this.isTouchActive = isTouched
+        val targetScale = if (isTouched) SCALE_ACTIVE else SCALE_INACTIVE
+        val animationDuration = if (isTouched) longPressDurationMs else IDLE_ANIMATION_DURATION_MS
+
+        if (scale.value != targetScale) {
+            animationJob = coroutineScope.launch {
+                scale.animateTo(
+                    targetValue = targetScale,
+                    animationSpec = tween(animationDuration),
+                )
+            }
         }
     }
 
@@ -197,47 +218,49 @@ private class OverlayIndicationNode(private val interactionSource: InteractionSo
         coroutineScope.launch {
             interactionSource.interactions.collect { interaction ->
                 when (interaction) {
-                    is PressInteraction.Press -> animateTo(PRESSED_TARGET_ALPHA)
-                    is PressInteraction.Release -> animateTo(0f)
-                    is PressInteraction.Cancel -> animateTo(0f)
+                    is Press -> animateTo(true)
+                    is Release, is Cancel -> animateTo(false)
                 }
             }
+        }
+
+        // This is a hack to support being used in movable content. When dragging start, the
+        // indication gets detached and reattached in the same frame, which briefly cancels the
+        // animation coroutine. Restart an animation to the current state if necessary to restart
+        // the animation that was cancelled on the MovableContent state transition.
+        animateTo(isTouchActive)
+
+        observeReads {
+            onObservedReadsChanged()
         }
     }
 
     override fun onDetach() {
-        pressJob?.cancel()
-        pressJob = null
+        animationJob?.cancel()
+        animationJob = null
+    }
+
+    override fun onReset() {
+        super.onReset()
+        isTouchActive = false
+        scale = Animatable(SCALE_INACTIVE)
+    }
+
+    override fun onObservedReadsChanged() {
+        longPressDurationMs = currentValueOf(LocalViewConfiguration).longPressTimeoutMillis.toInt()
     }
 
     override fun ContentDrawScope.draw() {
-        val alpha = currentAlpha.value
-        if (alpha > 0f) {
-            // Save a layer to apply the blend mode correctly
-            drawContext.canvas.saveLayer(size.toRect(), layerPaint)
-
-            // Draw the original content (e.g., the icon)
-            drawContent()
-
-            // Draw the white overlay with SrcAtop blend mode.
-            // This will draw the white color (with its alpha) only where the content
-            // (destination) has been drawn, effectively clipping the overlay to the content's shape.
-            drawRect(
-                color = Color.White,
-                alpha = alpha, // The overlay's own alpha
-                blendMode = BlendMode.SrcAtop,
-            )
-
-            // Restore the layer, merging it with the previous content
-            drawContext.canvas.restore()
-        } else {
-            // If no overlay is needed, just draw the content directly
-            drawContent()
-        }
+        val centeringFactor = (1 - scale.value) / 2f
+        drawContext.canvas.translate(size.width * centeringFactor, size.height * centeringFactor)
+        drawContext.canvas.scale(scale.value)
+        drawContent()
     }
 
-    companion object {
-        private const val ANIMATION_DURATION_MS = 300
-        private const val PRESSED_TARGET_ALPHA = 0.45f
+    private companion object {
+        const val SCALE_INACTIVE = 1f
+        const val SCALE_ACTIVE = 1.10f
+
+        const val IDLE_ANIMATION_DURATION_MS = 300
     }
 }

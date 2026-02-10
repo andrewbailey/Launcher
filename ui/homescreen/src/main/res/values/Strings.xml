@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="uninstall_app">Uninstall</string>
+    <string name="remove_item">Remove</string>
+    <string name="cancel_drag">Cancel</string>
+</resources>

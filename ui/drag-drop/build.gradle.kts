@@ -3,11 +3,10 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
-    alias(libs.plugins.metro)
 }
 
 android {
-    namespace = "dev.andrewbailey.launcher.ui.homescreen"
+    namespace = "dev.andrewbailey.launcher.ui.dragdrop"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
@@ -38,21 +37,9 @@ kotlin {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.material3.icons)
-
-    implementation(project(":inject"))
-    implementation(project(":data:apps"))
-    implementation(project(":data:config"))
-    implementation(project(":data:icon"))
-
-    implementation(project(":ui:common"))
-    implementation(project(":ui:drag-drop"))
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

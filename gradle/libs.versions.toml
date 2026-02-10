@@ -11,6 +11,7 @@ kotlin = "2.3.0"
 ktlint = "1.8.0"
 lifecycleRuntimeKtx = "2.10.0"
 material3 = "1.5.0-alpha12"
+materialIcons = "1.7.8"
 metro = "0.9.4"
 minSdk = "29"
 prettier = "3.6.2"
@@ -24,6 +25,7 @@ collection = "1.6.0-beta01"
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-collection = { module = "androidx.collection:collection", version.ref = "collection" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
+androidx-compose-material3-icons = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIcons" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose" }
 androidx-compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics", version.ref = "compose" }
 androidx-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
