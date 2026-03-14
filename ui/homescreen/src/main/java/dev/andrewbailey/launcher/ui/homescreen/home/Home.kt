@@ -1,8 +1,10 @@
 package dev.andrewbailey.launcher.ui.homescreen.home
 
 import android.app.WallpaperManager
+import android.content.Intent
 import android.graphics.Paint
 import android.graphics.RectF
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
@@ -20,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -57,14 +58,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import dev.andrewbailey.launcher.model.HomeConfiguration
 import dev.andrewbailey.launcher.provider.icon.AppIconProvider
 import dev.andrewbailey.launcher.ui.dragdrop.DragDropScope
 import dev.andrewbailey.launcher.ui.dragdrop.DragHotspot
+import dev.andrewbailey.launcher.ui.dragdrop.DropTarget
 import dev.andrewbailey.launcher.ui.homescreen.DraggableHomescreenItem
 import dev.andrewbailey.launcher.ui.homescreen.R
 import dev.andrewbailey.launcher.ui.homescreen.layout.PopulatedHomeGrid
@@ -239,35 +241,51 @@ private fun DragActions(modifier: Modifier = Modifier) {
 @Composable
 context(dragDropScope: DragDropScope<DraggableHomescreenItem>)
 private fun RemoveButton(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     HoverButton(
         icon = Icons.Default.Close,
         text = stringResource(R.string.remove_item),
-    )
+    ) {
+        Toast.makeText(context, "Remove", Toast.LENGTH_SHORT).show()
+    }
 }
 
 @Composable
 context(dragDropScope: DragDropScope<DraggableHomescreenItem>)
 private fun CancelButton(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     HoverButton(
         icon = Icons.Default.Close,
         text = stringResource(R.string.cancel_drag),
-    )
+    ) {
+        Toast.makeText(context, "Cancel", Toast.LENGTH_SHORT).show()
+    }
 }
 
 @Composable
 context(dragDropScope: DragDropScope<DraggableHomescreenItem>)
 private fun UninstallButton(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     HoverButton(
         icon = Icons.Default.Delete,
         text = stringResource(R.string.uninstall_app),
-    )
+    ) {
+        val app = (it as? DraggableHomescreenItem.Icon)?.listing ?: return@HoverButton
+        context.startActivity(Intent(Intent.ACTION_DELETE, "package:${app.packageName}".toUri()))
+    }
 }
 
 @Composable
 context(dragDropScope: DragDropScope<DraggableHomescreenItem>)
-private fun HoverButton(icon: ImageVector, text: String, modifier: Modifier = Modifier) {
-    DragHotspot(
+private fun HoverButton(
+    icon: ImageVector,
+    text: String,
+    modifier: Modifier = Modifier,
+    action: (DraggableHomescreenItem) -> Unit,
+) {
+    DropTarget(
         modifier = modifier,
+        dropAction = action,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

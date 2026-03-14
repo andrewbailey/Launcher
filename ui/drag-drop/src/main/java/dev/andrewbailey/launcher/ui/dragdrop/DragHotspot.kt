@@ -38,7 +38,7 @@ public fun <T : Any> DragHotspot(
 
 @Composable
 context(dragDropScope: DragDropScope<T>)
-public fun <T : Any> DragHotspot(
+internal fun <T : Any> DragHotspot(
     enabled: (T) -> Boolean,
     dropEnabled: (T) -> Boolean,
     hoverAction: suspend (T) -> Unit,

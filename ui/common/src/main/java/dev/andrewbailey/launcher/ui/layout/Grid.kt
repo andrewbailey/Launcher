@@ -122,7 +122,11 @@ public fun UnboundedVerticalGrid(
             measurable.measure(constraints)
         }
 
-        layout(width = constraints.maxWidth, height = cellHeight * heightInCells.halfSteps / 2) {
+        layout(
+            width = constraints.maxWidth,
+            height = (cellHeight * heightInCells.halfSteps / 2)
+                .coerceAtLeast(constraints.minHeight),
+        ) {
             placeables.fastForEach { placeable ->
                 val gridData = (placeable.parentData as? GridParentData) ?: GridParentData.Default
 
