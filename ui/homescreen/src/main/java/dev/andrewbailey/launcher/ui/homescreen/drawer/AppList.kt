@@ -1,7 +1,9 @@
 package dev.andrewbailey.launcher.ui.homescreen.drawer
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -27,11 +29,14 @@ internal fun AppList(
     apps: List<ApplicationListing>,
     iconProvider: AppIconProvider,
     modifier: Modifier = Modifier,
+    contentPaddingValues: PaddingValues = PaddingValues.Zero,
 ) {
     UnboundedVerticalGrid(
         gridWidth = gridWidth,
         cellHeight = 112.dp,
-        modifier = modifier.verticalScroll(rememberScrollState()),
+        modifier = modifier
+            .verticalScroll(rememberScrollState())
+            .padding(contentPaddingValues),
     ) {
         apps.forEachIndexed { index, listing ->
             val y = index / (gridWidth.halfSteps / 2)

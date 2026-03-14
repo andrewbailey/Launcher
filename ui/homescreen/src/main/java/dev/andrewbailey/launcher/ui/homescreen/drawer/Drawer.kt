@@ -1,5 +1,6 @@
 package dev.andrewbailey.launcher.ui.homescreen.drawer
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -12,7 +13,10 @@ import dev.andrewbailey.launcher.ui.mediator.retainUiMediator
 
 @Composable
 context(dragDropScope: DragDropScope<DraggableHomescreenItem>)
-internal fun Drawer(modifier: Modifier = Modifier) {
+internal fun Drawer(
+    modifier: Modifier = Modifier,
+    contentPaddingValues: PaddingValues = PaddingValues.Zero,
+) {
     val mediator = retainUiMediator<DrawerStateMediator>()
     AppList(
         gridWidth = 5.gd,
@@ -21,5 +25,6 @@ internal fun Drawer(modifier: Modifier = Modifier) {
             .value,
         iconProvider = mediator.iconProvider,
         modifier = modifier.fillMaxSize(),
+        contentPaddingValues = contentPaddingValues,
     )
 }
