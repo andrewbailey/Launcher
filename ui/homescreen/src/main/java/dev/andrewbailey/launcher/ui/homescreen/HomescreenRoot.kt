@@ -1,13 +1,17 @@
 package dev.andrewbailey.launcher.ui.homescreen
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
+import dev.andrewbailey.launcher.ui.common.thenIf
 import dev.andrewbailey.launcher.ui.dragdrop.DragDropSurface
 import dev.andrewbailey.launcher.ui.homescreen.drawer.Drawer
 import dev.andrewbailey.launcher.ui.homescreen.home.Home
@@ -17,11 +21,19 @@ import dev.andrewbailey.launcher.ui.homescreen.layout.FlingLayoutExpansionState.
 import dev.andrewbailey.launcher.ui.homescreen.layout.rememberFlingLayoutAnchoredDraggableState
 import dev.andrewbailey.launcher.ui.homescreen.util.expandNotificationShade
 import dev.andrewbailey.launcher.ui.homescreen.util.expandSettingsShade
+import kotlinx.coroutines.launch
 
 @Composable
 public fun HomescreenRoot(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val draggableState = rememberFlingLayoutAnchoredDraggableState()
+
+    val coroutineScope = rememberCoroutineScope()
+    BackHandler(enabled = draggableState.currentValue != Collapsed) {
+        coroutineScope.launch {
+            draggableState.animateTo(Collapsed)
+        }
+    }
 
     @Suppress("RemoveExplicitTypeArguments")
     DragDropSurface<DraggableHomescreenItem>(modifier) {
@@ -37,6 +49,7 @@ public fun HomescreenRoot(modifier: Modifier = Modifier) {
         ) {
             Home(
                 modifier = Modifier
+                    .thenIf(draggableState.currentValue == Collapsed) { systemGestureExclusion() }
                     .offset {
                         val inverseOffset = draggableState.offset -
                             draggableState.anchors.positionOf(Collapsed)
