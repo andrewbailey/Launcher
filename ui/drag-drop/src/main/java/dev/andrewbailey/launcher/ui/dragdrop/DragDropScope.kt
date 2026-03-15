@@ -94,24 +94,48 @@ public class DragDropScope<T : Any> {
     }
 
     private fun findInteractingHotspot(item: T): Hotspot<T>? {
-        val dragContentCenter = absoluteDragPosition + Offset(
-            x = activeDragContentSize.width / 2f,
-            y = activeDragContentSize.height / 2f,
-        )
+        var bestHotspot: Hotspot<T>? = null
+        var bestHotspotDistanceSquared = Float.MAX_VALUE
 
-        return hotspots
-            .filter {
-                it.enabled(item) && dragContentCenter in it.globalPosition
+        val dragCenter = absoluteDragPosition +
+            Offset(activeDragContentSize.width / 2f, activeDragContentSize.height / 2f)
+
+        for (i in 0 until hotspots.size) {
+            val hotspot = hotspots[i]
+            if (!hotspot.enabled(item)) continue
+
+            val (hotspotLeft, hotspotTop, hotspotRight, hotspotBottom) = hotspot.globalPosition
+            val padding = hotspot.interactionPadding
+
+            val isDragInsideHotspotBounds =
+                dragCenter.x in (hotspotLeft - padding)..<(hotspotRight + padding) &&
+                    dragCenter.y in (hotspotTop - padding)..<(hotspotBottom + padding)
+
+            if (isDragInsideHotspotBounds) {
+                val hotspotCenter = hotspot.globalPosition.center
+                val dx = hotspotCenter.x - dragCenter.x
+                val dy = hotspotCenter.y - dragCenter.y
+                var distanceSquared = dx * dx + dy * dy
+
+                // Give a slight preference (15% bonus) to the currently active hotspot to prevent
+                // flickering when the drag point is near a boundary between two hotspots.
+                if (hotspot == lastActiveHotspot) {
+                    distanceSquared *= 0.85f
+                }
+
+                if (bestHotspot == null || distanceSquared < bestHotspotDistanceSquared) {
+                    bestHotspot = hotspot
+                    bestHotspotDistanceSquared = distanceSquared
+                }
             }
-            .minByOrNull { hotspot ->
-                val center = hotspot.globalPosition.center
-                val offsetFromCenter = center - dragContentCenter
-                offsetFromCenter.getDistanceSquared()
-            }
+        }
+
+        return bestHotspot
     }
 
     internal interface Hotspot<T : Any> {
         val globalPosition: Rect
+        val interactionPadding: Int
 
         fun enabled(draggingItem: T): Boolean
         fun dropEnabled(draggingItem: T): Boolean

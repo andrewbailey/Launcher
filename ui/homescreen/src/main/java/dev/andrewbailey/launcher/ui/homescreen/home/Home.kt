@@ -283,6 +283,7 @@ private fun HoverButton(
     DropTarget(
         modifier = modifier,
         dropAction = action,
+        interactionPadding = 24.dp,
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

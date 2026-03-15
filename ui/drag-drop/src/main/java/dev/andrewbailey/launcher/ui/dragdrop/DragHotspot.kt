@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -12,6 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
@@ -24,12 +28,14 @@ public fun <T : Any> DragHotspot(
     modifier: Modifier = Modifier,
     enabled: (T) -> Boolean = { true },
     hoverAction: suspend (T) -> Unit = {},
+    interactionPadding: Dp = 0.dp,
     content: @Composable DragHotspotScope<T>.() -> Unit,
 ) {
     DragHotspot(
         modifier = modifier,
         enabled = enabled,
         dropEnabled = { false },
+        interactionPadding = interactionPadding,
         hoverAction = hoverAction,
         dropAction = {},
         content = content,
@@ -44,6 +50,7 @@ internal fun <T : Any> DragHotspot(
     hoverAction: suspend (T) -> Unit,
     dropAction: (T) -> Unit,
     modifier: Modifier = Modifier,
+    interactionPadding: Dp = 0.dp,
     content: @Composable DragHotspotScope<T>.() -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -53,6 +60,7 @@ internal fun <T : Any> DragHotspot(
         this.dropEnabled = dropEnabled
         this.hoverAction = hoverAction
         this.dropAction = dropAction
+        this.interactionPadding = with(LocalDensity.current) { interactionPadding.roundToPx() }
     }
 
     DisposableEffect(scope, dragDropScope) {
@@ -89,6 +97,8 @@ private class DragHotspotScopeImpl<T : Any>(private val coroutineScope: Coroutin
         get() = hoverItem != null
 
     override var globalPosition by mutableStateOf(Rect.Zero)
+
+    override var interactionPadding by mutableIntStateOf(0)
 
     var enabled: (T) -> Boolean by mutableStateOf(EnabledUninitialized)
     var dropEnabled: (T) -> Boolean by mutableStateOf(DropEnabledUninitialized)
